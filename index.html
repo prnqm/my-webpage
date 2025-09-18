@@ -12,18 +12,63 @@
     <h1>Welcome to My Website</h1>
     <nav>
       <a href="#">Home</a> |
-      <a href="about.html">About</a>
+      <a href="#">About</a> |
       <a href="#">Contact</a>
     </nav>
   </header>
 
   <main>
     <h2>Hello, world!</h2>
-    <p>This is a simple HTML & CSS website built from scratch to say "I Love you Ashleigh Rucker".</p>
+    <p>This is a simple HTML & CSS website where I say "I love you Ashleigh Rucker".</p>
+    <input type="file" id="excelFile" accept=".xlsx, .xls" />
+    <div id="excelData"></div>
   </main>
 
   <footer>
     <p>&copy; 2025 My Website</p>
   </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  document.getElementById('excelFile').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      displayExcelData(jsonData);
+    };
+
+    reader.readAsArrayBuffer(file);
+  });
+
+  function displayExcelData(data) {
+    const output = document.getElementById('excelData');
+    output.innerHTML = "<h3>Excel Data:</h3>";
+
+    const table = document.createElement("table");
+    table.border = 1;
+
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+      row.forEach(cell => {
+        const td = document.createElement("td");
+        td.textContent = cell;
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    });
+
+    output.appendChild(table);
+  }
+</script>
 </body>
 </html>
